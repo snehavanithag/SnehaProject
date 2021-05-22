@@ -1,0 +1,46 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var GradeID = ViewBag.GradeID != null ? ViewBag.GradeID : 0;
+    var GradeYear = string.IsNullOrEmpty(ViewBag.GradeYear) ? string.Empty: ViewBag.GradeYear;
+
+}
+
+<br />
+<br />
+<br />
+
+<div class="panel">
+    <div class="panel-heading">
+        <div class="col-md-row">
+            <div class="col-md-4"></div>
+            <div class="col-md-4">
+                @*@Html.DropDownList("Grades", new SelectList(ViewBag.GradeList, "GradeID", "GradeName"), (string)ViewData["GradeName"], new { @class = "form-control", id = "Grades" })*@
+                @Html.DropDownList("Grades", new SelectList(ViewBag.GradeList, "GradeValue", "GradeText"), (string)ViewData["GradeName"], new { @class = "form-control", id = "Grades" })
+            </div>
+            <div class="col-md-4"></div>
+        </div>
+    </div>
+    <br />
+    <br />
+    <div class="panel-body">
+        <div id="dtPartial"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        if (parseInt("@GradeID")  != 0) {
+            $("#dtPartial").empty();
+            $("#dtPartial").load("/Score/GetScores", { GradeID: "@GradeID", GradeYear:"@GradeYear" });
+        }
+
+        $("#Grades").on("change", function () {
+            $("#dtPartial").empty();
+            var GradeData = $(this).val().split(',');
+            $("#dtPartial").load("/Score/GetScores", { GradeID: GradeData[0], GradeYear: GradeData[1] });
+         });
+
+    });
+</script>

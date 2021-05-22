@@ -1,0 +1,200 @@
+﻿@model SnehaProject.ViewModel.SubjectViewModel
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+ }
+<br />
+<br />
+<div class="panel">
+    <div class="panel-heading">
+        <div class="col-md-row">
+            <div class="col-md-4"></div>
+            <div class="col-md-4">
+                @Html.DropDownList("Grades", new SelectList(Model.GradeList, "GradeID", "GradeName"), "Select Grade", new { @class = "form-control", id = "Grades" })
+            </div>
+            <div class="col-md-4"></div>
+        </div>
+    </div>
+    <br />
+    <br />
+    <div class="panel-body">
+        <p>
+            <div class="col-md-row">
+                <div class="col-md-4">
+                    <select name="Subjects" id="Subjects" size="@Model.SubjectList.Count" class="form-control" multiple>
+                        @foreach (var subject in Model.SubjectList)
+                        {
+                            <option value="@subject.SubjectID">@subject.SubjectName</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <button class="btn btn-info" style="margin-top:20px;width:80%" id="btnAddSubject">Add Subjects >> </button>
+                    <br />
+                    <button class="btn btn-info" style="margin-top:20px;width:80%" id="btnDeleteSubject">Delete Subjects << </button>
+                </div>
+                <div class="col-md-4">
+                    <select name="SelectedSubject" id="SelectedSubject" style="display:none;" class="form-control" multiple></select>
+                </div>
+            </div>
+        </p>
+    </div>
+</div>
+
+<div id="PartialView"></div>
+
+    <div id="dvError" class="alert alert-danger collapse">
+        <a href="#" class="close" id="dverrorclose">&times;</a>
+        <div id="dvErrText">
+            Test
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        $(function () {
+          
+            $("#btnAddSubject").on("click", function () {
+                var GradeID = $("#Grades").val();
+                var optionlist = "";
+                var cnt = 0;
+                var SubjectViewModel = new Array();
+                $("#SelectedSubject").show();
+                $('#Subjects option:selected').each(function (val) {
+                    var subjectid = $(this).val();
+                    var boolExist = false;
+
+                    if ($("#SelectedSubject option").length > 0) {
+                        $("#SelectedSubject option").each(function (i) {
+                            if (subjectid == $(this).val()) {
+                                boolExist = true;
+                                return false;
+                            }
+                        });
+                        if (!boolExist) {
+
+                            optionlist = GetOptionList(optionlist, GradeID, subjectid, $(this).text(), SubjectViewModel);
+
+                        }
+                    }
+                    else {
+                        optionlist = GetOptionList(optionlist, GradeID, subjectid, $(this).text(), SubjectViewModel);
+                    }
+
+                });
+
+                $.ajax({
+                    type: "post",
+                    dataType: "JSON",
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(SubjectViewModel),
+                    url: '/Subject/AddSubjects',
+                    success: function (data) {
+                        $("#SelectedSubject").append(optionlist);
+                        cnt = $("#SelectedSubject option").length + 1;
+                        LoadPartialView(cnt, GradeID);
+
+                    },
+                    error: function () {
+
+                    }
+                });
+                            
+            });
+
+            function GetOptionList(option, GradeID, id, name, SubjectViewModel) {
+
+                var Subject = {};
+                Subject.GradeID = GradeID;
+                Subject.SubjectID = id;
+                SubjectViewModel.push(Subject);
+
+                if (option != "") {
+                    option = option + "<option value=" + id + ">" + name + "</option>";
+                } else {
+                    option = "<option value=" + id + ">" + name + "</option>";
+                }
+                // alert(option);
+                return option;
+               
+            }
+            $("#btnDeleteSubject").on("click", function () {
+                var GradeID = $("#Grades").val();
+                var optionlist = "";
+                var cnt = 0;
+
+                var SubjectViewModel = new Array();
+                $('#SelectedSubject option:selected').each(function (val) {
+                    var subjectid = $(this).val();
+                    var Subject = {};
+                    Subject.GradeID = GradeID;
+                    Subject.SubjectID = subjectid;
+                    SubjectViewModel.push(Subject);
+                });
+
+                $.ajax({
+                    type: "post",
+                    dataType: "JSON",
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(SubjectViewModel),
+                    url: '/Subject/RemoveSubjects',
+                    success: function (data) {
+                        $("#SelectedSubject option:selected").remove();
+                        cnt = $("#SelectedSubject option").length;
+
+                        LoadPartialView(cnt, GradeID);
+
+
+                    },
+                    error: function () {
+
+                    }
+                });
+         
+            });
+
+           
+
+            $("select[name='Grades']").on("change", function () {
+                var GradeID = $(this).val();
+                var cnt = 0;
+                $("#SelectedSubject").empty();
+                 if (GradeID != "") {
+                    $.ajax({
+                        url: "/Subject/GetSubjects/",
+                        type: "Get",
+                        dataType: "JSON",
+                        data: { id: GradeID },
+                        success: function (data) {
+                            if (data != "") {
+                                $.each(data, function (idx, val) {
+                                    var option = "<option value=" + val.SubjectID + ">" + val.SubjectName + "</option>";
+                                    $("#SelectedSubject").append(option);
+                                    cnt = cnt + 1;
+                                });
+                            }
+                            LoadPartialView(cnt, GradeID);
+                           
+                        },
+                        error: function (jqXHR) {
+                            $("#dvErrText").text(jqXHR.responseText);
+                            $("#dvError").show('fade');
+                        }
+                    });
+                }
+
+            });
+
+            function LoadPartialView(cnt, GradeID) {
+                if (cnt != 0) {
+                    $("#SelectedSubject").attr("size", cnt);
+                    $("#SelectedSubject").show();
+                } else {
+                    $("#SelectedSubject").hide();
+                }
+                $("#PartialView").empty();
+                $("#PartialView").load("/Subject/GetSubjectByGrade", { GradeID: GradeID });
+            }
+      
+        });
+    </script>
+

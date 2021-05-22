@@ -1,0 +1,45 @@
+﻿@model IEnumerable<SnehaProject.ViewModel.GradeViewModel>
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h3>Grade List</h3>
+
+
+<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+    @foreach (var item in Model)
+    {
+        var dvCollapse = item.SchoolID == (item.SelectedSchoolID.HasValue? item.SelectedSchoolID.Value:1) ? "in" : string.Empty;
+               
+        <div class="panel">
+            <div class="panel-heading" role="tab" id="headingOne">
+                <h4 class="panel-title">
+                    <a role="button" data-toggle="collapse" data-parent="#accordion" href="#@item.SchoolID" >
+                        @item.GradeList.FirstOrDefault(x => x.SchoolID == item.SchoolID).SchoolName
+                    </a>
+                   <a href="\Grade\Create\@item.SchoolID" class = "pull-right" >Create</a>
+                </h4>
+              </div>
+            <div id="@item.SchoolID" class="panel-collapse collapse @dvCollapse" role="tabpanel">
+                <div class="panel-body">
+                    <table class="table info">
+                        <tbody>
+                            @foreach (var grade in item.GradeList)
+                            {
+                                <tr>
+                                    <td>@grade.GradeName</td>
+                                    <td>@grade.GradeYear</td>
+                                    <td><a href="\Grade\Edit\@grade.GradeID" class = "pull-right">Edit</a></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+
+ 

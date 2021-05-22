@@ -1,0 +1,129 @@
+﻿@model SnehaProject.ViewModel.ScoreViewModel
+
+@{ 
+    var GradeID = ViewBag.GradeID;
+    Model.AddScore.GradeID = GradeID;
+
+    var GradeYear = ViewBag.GradeYear.ToString().Split('-');
+    var StartYear = GradeYear[0];
+    var EndYear = GradeYear[1];
+    var StartMonth = ViewBag.SchoolStartMonth;
+    var EndMonth = ViewBag.SchoolEndMonth;
+}
+
+<table id="score" class="display" style="width:100%">
+    <thead>
+        <tr>
+            <th>Subject Name</th>
+            <th>Score</th>
+            <th>Test Date</th>
+            <th>Term Name</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.ScoreList)
+        {
+            <tr>
+                <td>@item.SubjectName</td>
+                <td>@item.Score</td>
+                <td>@item.TestDate.ToShortDateString()</td>
+                <td>@item.TermName</td>
+            </tr>
+
+        }
+    </tbody>
+</table>
+<div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+    <div class="modal-dialog" role="document">
+        <form class="form-horizontal" action="/Score/Create" method="post">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="exampleModalLabel">Add Test Score</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="SubjectID" class="col-sm-2 control-label">Subject</label>
+                        <div class="col-sm-10">
+                            @Html.DropDownListFor(x => x.AddScore.SubjectID, new SelectList(Model.SubjectList, "SubjectID", "SubjectName"), "Select Subject", new { @class = "form-control"})
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="Score" class="col-sm-2 control-label">Score</label>
+                        <div class="col-sm-10">
+                            @Html.TextBoxFor(x => x.AddScore.Score, new { @class = "form-control", placeholder="Enter Score" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="TestDate" class="col-sm-2 control-label">Test Date</label>
+                        <div class="col-sm-10">
+                            @Html.TextBoxFor(x => x.AddScore.TestDate, "{0:MM/dd/yyyy}", new { @class = "form-control" , placeholder="Select Date"})
+                            @Html.HiddenFor(x=>x.AddScore.GradeID)
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-info" data-dismiss="modal">Close</button>
+                    <input type="submit" class="btn btn-info" value="Submit" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $("document").ready(function () {
+       // $("#score").DataTable();
+        var groupColumn = 3;
+       
+        var table = $('#score').DataTable({
+            "columnDefs": [
+                {
+                    "visible": false, "targets": groupColumn,
+                    //"orderable": false, "targets": [0, 1, 2]
+                  //  "orderable": true, "targets": groupColumn
+                }
+            ],
+            "order": [[groupColumn, 'asc']],
+            "orderFixed": [groupColumn, 'asc'],
+            //"displayLength": 10,
+           // "ordering": false,
+            "drawCallback": function (settings) {
+                var api = this.api();
+                var rows = api.rows({ page: 'current' }).nodes();
+                var last = null;
+
+                api.column(groupColumn, { page: 'current' }).data().each(function (group, i) {
+                    if (last !== group) {
+                        $(rows).eq(i).before(
+                            '<tr class="group"><td colspan="4">' + group + '</td></tr>'
+                        );
+
+                        last = group;
+                    }
+                });
+            }
+        });
+        @*$("<a href='/Score/Create/@GradeID' id='Create' >Create New</a><span>&nbsp;&nbsp;&nbsp;</span>").prependTo(".dataTables_filter");*@
+        $("<a  class='btn btn-info' data-toggle='modal' data-target='#createModal'>Create New</a><span>&nbsp;&nbsp;&nbsp;</span>").prependTo(".dataTables_filter");
+
+        //var GradeYear = "@GradeYear";
+        var StartDate =  "@StartMonth" + "/01/" + + "@StartYear" ;
+        var EndDate = "@EndMonth" + "/01/" +   "@EndYear";
+
+        //alert(StartDate);
+        //alert(EndDate);
+
+        $("#AddScore_TestDate").datepicker({
+            changeMonth: true,
+            changeYear: true,
+            minDate: new Date(StartDate),
+            maxDate: new Date(EndDate)
+
+        });     
+       
+
+    });
+</script>
+

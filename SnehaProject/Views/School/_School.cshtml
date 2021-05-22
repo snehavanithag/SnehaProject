@@ -1,0 +1,38 @@
+﻿@model Sneha_BL.School
+
+<div class="form-group">
+    <label for="SchoolName" class="form-label">School Name</label>
+    @Html.TextBoxFor(x => x.SchoolName, new { @class = "form-control", placeholder = "School Name" })
+    @Html.ValidationMessageFor(x => x.SchoolName, "", new { @class = "text-danger" })
+</div>
+<div class="form-group">
+    <label for="Duration" class="form-label">Duration</label>
+    @Html.TextBoxFor(x => x.Duration, new { @class = "form-control", placeholder = "Duration" })
+    @Html.ValidationMessageFor(x => x.Duration, "", new { @class = "text-danger" })
+</div>
+@Html.HiddenFor(m => m.SchoolID)
+@Html.ValidationSummary(false, "", new { @class = "text-danger" })
+
+<input type="submit" class="btn btn-primary" value="Submit" />
+<input type="button" class="btn btn-primary" value="Cancel" id="btnCancel" />
+<a href="/School" class="btn btn-primary">Back</a>
+
+<script type="text/javascript">
+    $(function () {
+        $("#btnCancel").on("click", function () {
+            $("input[name='SchoolName']").val("");
+            $("input[name='Duration']").val("");
+            $('.field-validation-error').html("");
+            ClearValidationSummary();
+        });
+        $("input[type='text']").on("change", function () {
+            ClearValidationSummary();
+        });
+        function ClearValidationSummary() {
+            $('form').find("[data-valmsg-summary=true]")
+                .removeClass("validation-summary-errors")
+                .addClass("validation-summary-valid")
+                .find("ul").empty();
+        }
+    });
+</script>

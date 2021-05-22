@@ -1,0 +1,29 @@
+﻿@model List<SnehaProject.ViewModel.SubjectListByGrade>
+@{
+    var first = 0;
+}
+<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+    @foreach (var subject in Model)
+    {
+        first = first + 1;
+        var dvFirst = ((first == subject.SelectedGrade) && (subject.Subjects.Any(x=>x.SubjectID.HasValue))) ? "in" : string.Empty;
+        var panelid = "panel" + first.ToString();
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <a role="button" data-toggle="collapse" data-parent="#accordion" href="#@panelid" aria-expanded="true" aria-controls="collapseOne">
+                    @subject.GradeNameKey
+                </a>
+            </div>
+            <div id="@panelid" class="panel-collapse collapse @dvFirst" role="tabpanel" aria-labelledby="headingOne">
+                <div class="panel-body">
+                    <ul class="list-group">
+                        @foreach (var item in subject.Subjects)
+                        {
+                            <li class="list-group-item">@item.SubjectName</li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    }
+</div>
