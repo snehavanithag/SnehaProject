@@ -6,22 +6,6 @@
 <br />
 <br />
 <form method="post" action="/Grade/Edit">
-    <div class="form-group">
-        <label for="GradeName" class="form-label">Grade Name</label>
-        <input type="text" class="form-control" id="GradeName" name="GradeName" placeholder="Grade Name" value="@Model.GradeName">
-        @Html.ValidationMessageFor(x => x.GradeName, "", new { @class = "text-danger" })
-    </div>
-    <div class="form-group">
-        <label for="GradeYear" class="form-label">Duration</label>
-        <input type="text" class="form-control" id="GradeYear" name="GradeYear" placeholder="GradeYear" value="@Model.GradeYear">
-        @Html.ValidationMessageFor(x => x.GradeYear, "", new { @class = "text-danger" })
-    </div>
-    <div class="form-group">
-        <label for="SchoolName" class="form-label">School Name</label>
-        @Html.DropDownListFor(x => x.SchoolID, new SelectList(ViewBag.Schools, "SchoolID", "SchoolName", Model.SchoolID), new { @class = "form-control" })
-        @Html.ValidationMessageFor(x => x.SchoolID, "", new { @class = "text-danger" })
-    </div>  
-    @Html.HiddenFor(x=>x.GradeID)
-   <button type="submit" class="btn btn-primary">Submit</button>
+    @Html.Partial("_Grade",Model)
 </form>
 

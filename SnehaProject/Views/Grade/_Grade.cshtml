@@ -1,0 +1,42 @@
+﻿@model Sneha_BL.Grade
+
+<div class="form-group">
+    <label for="GradeName" class="form-label">Grade Name</label>
+    @Html.TextBoxFor(x => x.GradeName, new { @class = "form-control", placeholder = "Grade Name" })
+    @Html.ValidationMessageFor(x => x.GradeName, "", new { @class = "text-danger" })
+</div>
+<div class="form-group">
+    <label for="GradeYear" class="form-label">Duration</label>
+    @Html.TextBoxFor(x => x.GradeYear, new { @class = "form-control", placeholder = "Duration" })
+    @Html.ValidationMessageFor(x => x.GradeYear, "", new { @class = "text-danger" })
+</div>
+<div class="form-group">
+    <label for="SchoolName" class="form-label">School Name</label>
+    @Html.DropDownListFor(x => x.SchoolID, new SelectList(ViewBag.Schools, "SchoolID", "SchoolName", Model.SchoolID), new { @class = "form-control" })
+    @Html.ValidationMessageFor(x => x.SchoolID, "", new { @class = "text-danger" })
+</div>
+@Html.HiddenFor(x => x.GradeID)
+@Html.ValidationSummary(false, "", new { @class = "text-danger" })
+<input type="submit" class="btn btn-primary" value="Submit" />
+<button type="button" class="btn btn-primary" id="btnCancel">Cancel</button>
+
+<a href="/Grade/Index" class="btn btn-primary">Back</a>
+<script type="text/javascript">
+    $(function () {
+        $("#btnCancel").on("click", function () {
+            $("input[name='SchoolName']").val("");
+            $("input[name='Duration']").val("");
+            $('.field-validation-error').html("");
+            ClearValidationSummary();
+        });
+        $("input[type='text']").on("change", function () {
+            ClearValidationSummary();
+        });
+        function ClearValidationSummary() {
+            $('form').find("[data-valmsg-summary=true]")
+                .removeClass("validation-summary-errors")
+                .addClass("validation-summary-valid")
+                .find("ul").empty();
+        }
+    });
+</script>

@@ -160,6 +160,7 @@
     <Content Include="Content\bootstrap-theme.min.css.map" />
     <Content Include="Content\bootstrap.css.map" />
     <Content Include="Content\bootstrap.min.css.map" />
+    <Content Include="App_Code\Shared.cshtml" />
     <None Include="Scripts\jquery-3.3.1.intellisense.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
@@ -207,6 +208,7 @@
     <Content Include="Views\Score\_ScoresByGrade.cshtml" />
     <Content Include="Views\Chart\Index.cshtml" />
     <Content Include="Views\School\_School.cshtml" />
+    <Content Include="Views\Grade\_Grade.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -8,8 +8,10 @@ namespace Sneha_BL
 {
     public interface IGradeRepositary
     {
-        List<Grade> GetGrades();
+        List<Grade> GetGradesBySchool();
         void Add(Grade grade);
         void Edit(Grade grade);
+        List<Grade> GetGrades();
+        void DeleteGrade(int GradeID);
     }
 }

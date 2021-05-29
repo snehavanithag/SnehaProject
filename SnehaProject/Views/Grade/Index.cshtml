@@ -10,27 +10,32 @@
 <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
     @foreach (var item in Model)
     {
-        var dvCollapse = item.SchoolID == (item.SelectedSchoolID.HasValue? item.SelectedSchoolID.Value:1) ? "in" : string.Empty;
-               
+        var dvCollapse = item.SchoolID == (item.SelectedSchoolID.HasValue ? item.SelectedSchoolID.Value : 1) ? "in" : string.Empty;
+        var SchoolData = @item.GradeList.FirstOrDefault(x => x.SchoolID == item.SchoolID);
+
         <div class="panel">
             <div class="panel-heading" role="tab" id="headingOne">
                 <h4 class="panel-title">
-                    <a role="button" data-toggle="collapse" data-parent="#accordion" href="#@item.SchoolID" >
-                        @item.GradeList.FirstOrDefault(x => x.SchoolID == item.SchoolID).SchoolName
+                    <a role="button" data-toggle="collapse" data-parent="#accordion" href="#@item.SchoolID">
+                        @(String.Format("{0} ({1})", @SchoolData.SchoolName, @SchoolData.SchoolDuration))
                     </a>
-                   <a href="\Grade\Create\@item.SchoolID" class = "pull-right" >Create</a>
+                    <a href="\Grade\Create\@item.SchoolID" class="pull-right">Create</a>
                 </h4>
-              </div>
+            </div>
             <div id="@item.SchoolID" class="panel-collapse collapse @dvCollapse" role="tabpanel">
                 <div class="panel-body">
                     <table class="table info">
                         <tbody>
                             @foreach (var grade in item.GradeList)
                             {
-                                <tr>
+                                var rowId = "row-" + grade.GradeID;
+                                <tr id="@rowId">
                                     <td>@grade.GradeName</td>
                                     <td>@grade.GradeYear</td>
-                                    <td><a href="\Grade\Edit\@grade.GradeID" class = "pull-right">Edit</a></td>
+                                    <td  class="pull-right">
+                                        <a href="\Grade\Edit\@grade.GradeID">Edit</a>/
+                                        <a class="Delete" idValue="@grade.GradeID" href="#"> Delete </a>
+                                    </td>
                                 </tr>
                             }
                         </tbody>
@@ -40,6 +45,37 @@
         </div>
     }
 </div>
+<input type="hidden" id="hdnGrade" />
+@Shared.ShowModal("Do You Want To Delete This Grade?")
+<script type="text/javascript">
+    $(function () {
 
+        $(".Delete").on("click", function () {
+            var id = $(this).attr("idValue");
+            $("#hdnGrade").val(id);
+            $(".modal").modal('show');
+        });
 
- 
+        $("#btnDelete").on("click", function () {
+            var id = $("#hdnGrade").val();
+            $.ajax({
+                type: "post",
+                dataType: "JSON",
+                contentType: "application/json; charset=utf-8",
+                data: '{"id":' + id + '}',
+                url: "/Grade/Delete",
+                success: function (data) {
+                    if (data == "Success") {
+                        var rowId = "row-" + id;
+                        $(".modal").modal("hide");
+                        $("table tbody #" + rowId).remove();
+                    }
+
+                }
+
+            });
+        });
+
+    });
+</script>
+
