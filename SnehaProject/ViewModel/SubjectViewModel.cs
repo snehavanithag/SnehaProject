@@ -17,6 +17,7 @@ namespace SnehaProject.ViewModel
     {
         public string GradeNameKey { get; set; }
         public int SelectedGrade { get; set; }
+        public int GradeID { get; set; }
         public List<Subject> Subjects { get; set; }
 
     }

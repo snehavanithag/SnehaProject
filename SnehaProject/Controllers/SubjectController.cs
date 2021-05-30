@@ -22,7 +22,7 @@ namespace SnehaProject.Controllers
         public ActionResult Index()
         {
             List<SubjectList> list = subjectRepositary.GetSubjectList();
-            List<Grade> gradelist = gradeRepositary.GetGrades().Where(x=>x.SchoolID != 3).ToList();
+            List<Grade> gradelist = gradeRepositary.GetGrades().ToList();
            // List<SubjectListByGrade> gradesubjects = subjectRepositary.GetSubjectByGrade().GroupBy(x=>x.GradeName).
             //                                            Select(g => new SubjectListByGrade { GradeNameKey = g.Key, Subjects = g.ToList() }).ToList();
             SubjectViewModel model = new SubjectViewModel();
@@ -56,8 +56,11 @@ namespace SnehaProject.Controllers
         
         public ActionResult GetSubjectByGrade(int GradeID)
         {
-           List<SubjectListByGrade> data = subjectRepositary.GetSubjectByGrade().GroupBy(x => x.GradeName).
-                                                        Select(g => new SubjectListByGrade { GradeNameKey = g.Key, Subjects = g.ToList(), SelectedGrade = GradeID }).ToList();
+            //List<SubjectListByGrade> data = subjectRepositary.GetSubjectByGrade().GroupBy(x => x.GradeName).
+            //                                             Select(g => new SubjectListByGrade { GradeNameKey = g.Key, Subjects = g.ToList(), SelectedGrade = GradeID }).ToList();
+
+            List<SubjectListByGrade> data = subjectRepositary.GetSubjectByGrade().GroupBy(x => x.GradeID).
+                                                       Select(g => new SubjectListByGrade { GradeNameKey = g.ToList().Where(y=>y.GradeID == g.Key.Value).FirstOrDefault().GradeName, Subjects = g.ToList(), SelectedGrade = GradeID, GradeID = g.Key.Value }).ToList();
             return PartialView("_SubjectsByGrade", data);
          }
     }

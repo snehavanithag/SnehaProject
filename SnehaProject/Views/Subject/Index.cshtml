@@ -167,12 +167,15 @@
                         success: function (data) {
                             if (data != "") {
                                 $.each(data, function (idx, val) {
-                                    var option = "<option value=" + val.SubjectID + ">" + val.SubjectName + "</option>";
-                                    $("#SelectedSubject").append(option);
-                                    cnt = cnt + 1;
+                                    if (val.SubjectID != null) {
+                                        var option = "<option value=" + val.SubjectID + ">" + val.SubjectName + "</option>";
+                                        $("#SelectedSubject").append(option);
+                                        cnt = cnt + 1;
+                                    }
                                 });
+                                LoadPartialView(cnt, GradeID);
                             }
-                            LoadPartialView(cnt, GradeID);
+                            //LoadPartialView(cnt, GradeID);
                            
                         },
                         error: function (jqXHR) {
