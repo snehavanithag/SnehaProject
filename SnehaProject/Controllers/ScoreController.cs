@@ -59,5 +59,17 @@ namespace SnehaProject.Controllers
             scoreRepository.AddScore(Score.AddScore);
             return RedirectToAction("Index",new { id = Score.AddScore.GradeID });
         }
+
+        public ActionResult UpdateScore(UpdateScoreViewModel UpdateScoreViewModel)
+        {
+            return PartialView("_UpdateScoreView", UpdateScoreViewModel);
+        }
+
+        [HttpPost]
+        public ActionResult Update(UpdateScoreViewModel UpdateScoreViewModel)
+        {
+            scoreRepository.UpdateScore(UpdateScoreViewModel.SubjectScore);
+            return RedirectToAction("Index", new { id = UpdateScoreViewModel.SubjectScore.GradeID });
+        }
     }
 }
