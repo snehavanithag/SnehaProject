@@ -1,6 +1,6 @@
 ﻿@model SnehaProject.ViewModel.ScoreViewModel
 
-@{ 
+@{
     var GradeID = ViewBag.GradeID;
     Model.AddScore.GradeID = GradeID;
 
@@ -10,29 +10,38 @@
     var StartMonth = ViewBag.SchoolStartMonth;
     var EndMonth = ViewBag.SchoolEndMonth;
 }
-
-<table id="score" class="display" style="width:100%">
-    <thead>
-        <tr>
-            <th>Subject Name</th>
-            <th>Score</th>
-            <th>Test Date</th>
-            <th>Term Name</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model.ScoreList)
-        {
+<div>
+    <table id="score" class="display" style="width:100%">
+        <thead>
             <tr>
-                <td>@item.SubjectName</td>
-                <td>@item.Score</td>
-                <td>@item.TestDate.ToShortDateString()</td>
-                <td>@item.TermName</td>
+                <th>Subject Name</th>
+                <th>Score</th>
+                <th>Test Date</th>
+                <th>Term Name</th>
+                <th>Edit</th>
+                <th>Delete</th>
             </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.ScoreList)
+            {
+                <tr>
+                    <td class="SubjectName">@item.SubjectName</td>
+                    <td class="Score">@item.Score</td>
+                    <td class="TestDate">@item.TestDate.ToShortDateString()</td>
+                    <td class="TermName">@item.TermName</td>
+                    <td><a class="editor-edit" style="cursor:pointer" ScoreID="@item.ScoreID"><i class="fa fa-pencil" /></a></td>
+                    <td><a class="editor-delete" style="cursor:pointer" ScoreID="@item.ScoreID"><i class="fa fa-trash" /></a></td>
+                </tr>
 
-        }
-    </tbody>
-</table>
+            }
+        </tbody>
+    </table>
+
+
+
+</div>
+
 <div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
     <div class="modal-dialog" role="document">
         <form class="form-horizontal" action="/Score/Create" method="post">
@@ -45,20 +54,20 @@
                     <div class="form-group">
                         <label for="SubjectID" class="col-sm-2 control-label">Subject</label>
                         <div class="col-sm-10">
-                            @Html.DropDownListFor(x => x.AddScore.SubjectID, new SelectList(Model.SubjectList, "SubjectID", "SubjectName"), "Select Subject", new { @class = "form-control"})
+                            @Html.DropDownListFor(x => x.AddScore.SubjectID, new SelectList(Model.SubjectList, "SubjectID", "SubjectName"), "Select Subject", new { @class = "form-control" })
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="Score" class="col-sm-2 control-label">Score</label>
                         <div class="col-sm-10">
-                            @Html.TextBoxFor(x => x.AddScore.Score, new { @class = "form-control", placeholder="Enter Score" })
+                            @Html.TextBoxFor(x => x.AddScore.Score, new { @class = "form-control", placeholder = "Enter Score" })
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="TestDate" class="col-sm-2 control-label">Test Date</label>
                         <div class="col-sm-10">
-                            @Html.TextBoxFor(x => x.AddScore.TestDate, "{0:MM/dd/yyyy}", new { @class = "form-control" , placeholder="Select Date"})
-                            @Html.HiddenFor(x=>x.AddScore.GradeID)
+                            @Html.TextBoxFor(x => x.AddScore.TestDate, "{0:MM/dd/yyyy}", new { @class = "form-control", placeholder = "Select Date" })
+                            @Html.HiddenFor(x => x.AddScore.GradeID)
                         </div>
                     </div>
 
@@ -71,13 +80,17 @@
         </form>
     </div>
 </div>
+<div id="UpsertView">
+</div>
 
 <script type="text/javascript">
+
+    var editor;
     $("document").ready(function () {
        // $("#score").DataTable();
         var groupColumn = 3;
-       
-        var table = $('#score').DataTable({
+
+         var table = $('#score').DataTable({
             "columnDefs": [
                 {
                     "visible": false, "targets": groupColumn,
@@ -104,25 +117,42 @@
                     }
                 });
             }
-        });
-        @*$("<a href='/Score/Create/@GradeID' id='Create' >Create New</a><span>&nbsp;&nbsp;&nbsp;</span>").prependTo(".dataTables_filter");*@
+         });
+
+
+
         $("<a  class='btn btn-info' data-toggle='modal' data-target='#createModal'>Create New</a><span>&nbsp;&nbsp;&nbsp;</span>").prependTo(".dataTables_filter");
 
-        //var GradeYear = "@GradeYear";
         var StartDate =  "@StartMonth" + "/01/" + + "@StartYear" ;
         var EndDate = "@EndMonth" + "/01/" +   "@EndYear";
 
-        //alert(StartDate);
-        //alert(EndDate);
-
+       
         $("#AddScore_TestDate").datepicker({
             changeMonth: true,
             changeYear: true,
             minDate: new Date(StartDate),
             maxDate: new Date(EndDate)
 
-        });     
-       
+        });
+
+      
+        $(".editor-edit").on("click", function () {
+
+            var UpdateScoreViewModel = {};
+
+            var SubjectScore = {};
+            SubjectScore.SubjectName = $(this).parent().parent("tr").children("td.SubjectName").text();
+            SubjectScore.Score = $(this).parent().parent("tr").children("td.Score").text();
+            SubjectScore.TestDate = $(this).parent().parent("tr").children("td.TestDate").text();
+            SubjectScore.ScoreID = $(this).attr("ScoreID");
+            SubjectScore.GradeID = "@GradeID";
+
+            UpdateScoreViewModel.SubjectScore = SubjectScore;
+            UpdateScoreViewModel.GradeStartDate = StartDate;
+            UpdateScoreViewModel.GradeEndDate = EndDate;
+
+            $("#UpsertView").load("/Score/UpdateScore", { UpdateScoreViewModel: UpdateScoreViewModel });
+        })
 
     });
 </script>

@@ -11,6 +11,7 @@ namespace Sneha_BL
     {
         public int GradeID { get; set; }
         public int SubjectID { get; set; }
+        public  int ScoreID { get; set; }
         public string SubjectName { get; set; }
         public decimal? Score { get; set; }
         [DataType(DataType.Date)]

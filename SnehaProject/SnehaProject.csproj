@@ -143,6 +143,7 @@
     <Compile Include="ViewModel\GradeViewModel.cs" />
     <Compile Include="ViewModel\ScoreViewModel.cs" />
     <Compile Include="ViewModel\SubjectViewModel.cs" />
+    <Compile Include="ViewModel\UpdateScoreViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-theme.css" />
@@ -150,6 +151,7 @@
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\DataTable.css" />
+    <Content Include="Content\FontAwesome.css" />
     <Content Include="Content\jquery-ui-1.10.4.custom.css" />
     <Content Include="Content\JQueryUI.css" />
     <Content Include="favicon.ico" />
@@ -209,6 +211,7 @@
     <Content Include="Views\Chart\Index.cshtml" />
     <Content Include="Views\School\_School.cshtml" />
     <Content Include="Views\Grade\_Grade.cshtml" />
+    <Content Include="Views\Score\_UpdateScoreView.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -37,6 +37,7 @@ namespace Sneha_BL
                     SubjectScore Score = new SubjectScore();
                     Score.GradeID = Convert.ToInt32(dr["GradeID"]);
                     Score.SubjectID = Convert.ToInt32(dr["SubjectID"]);
+                    Score.ScoreID = Convert.ToInt32(dr["ScoreID"]);
                     Score.SubjectName = dr["SubjectName"].ToString();
                     Score.TestDate = Convert.ToDateTime(dr["TestDate"]);
                     Score.TermName = dr["TermName"].ToString();
@@ -45,6 +46,15 @@ namespace Sneha_BL
                 }
             }
             return list;
+        }
+        public void UpdateScore(SubjectScore Score)
+        {
+            Dictionary<string, dynamic> scoreparam = new Dictionary<string, dynamic>();
+            scoreparam.Add("@ScoreID", Score.ScoreID);
+            scoreparam.Add("@TestDate", Score.TestDate);
+            scoreparam.Add("@Score", Score.Score);
+            dbHelper.UpdateData("Prc_EditScore", scoreparam);
+
         }
     }
 }
