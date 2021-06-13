@@ -11,5 +11,6 @@ namespace Sneha_BL
         List<SubjectScore> GetScoresByGradeID();
         void AddScore(SubjectScore Score);
         void UpdateScore(SubjectScore Score);
+        void DeleteScore(int ScoreID);
     }
 }
