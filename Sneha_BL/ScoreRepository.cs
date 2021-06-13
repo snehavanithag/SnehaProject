@@ -56,5 +56,12 @@ namespace Sneha_BL
             dbHelper.UpdateData("Prc_EditScore", scoreparam);
 
         }
+
+        public void DeleteScore(int ScoreID)
+        {
+            Dictionary<string, dynamic> scoreparam = new Dictionary<string, dynamic>();
+            scoreparam.Add("@ScoreID", ScoreID);
+            dbHelper.UpdateData("Prc_DeleteScore", scoreparam);
+        }
     }
 }

@@ -46,9 +46,17 @@
         $("#Grades").on("change", function () {
             $("#dtPartial").empty();
             var GradeData = $(this).val().split(',');
-            $("#dtPartial").load("/Score/GetScores", { GradeID: GradeData[0], GradeYear: GradeData[1] });
+            //$("#dtPartial").load("/Score/GetScores", { GradeID: GradeData[0], GradeYear: GradeData[1] });
+            //$("#dtPartial").animate({ opacity: 0 }, 1000);
+            //$("#dtPartial").load("/Score/GetScores", { GradeID: GradeData[0], GradeYear: GradeData[1] });
+            //$("#dtPartial").animate({ opacity: 1 }, 1000);
             //$("#dtPartial").load("/Score/UpsertScore");
+            $("#dtPartial").hide().load("/Score/GetScores", { GradeID: GradeData[0], GradeYear: GradeData[1] }, () => {
+                            $("#dtPartial").fadeIn(500)
+            });
+            //$("#dtPartial").load("/Score/GetScores", { GradeID: GradeData[0], GradeYear: GradeData[1] }).slideDown("slow");
         });
+       
        
 
     });
