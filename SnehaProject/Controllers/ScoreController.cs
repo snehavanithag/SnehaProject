@@ -69,7 +69,15 @@ namespace SnehaProject.Controllers
         public ActionResult Update(UpdateScoreViewModel UpdateScoreViewModel)
         {
             scoreRepository.UpdateScore(UpdateScoreViewModel.SubjectScore);
-            return RedirectToAction("Index", new { id = UpdateScoreViewModel.SubjectScore.GradeID });
+          //  return RedirectToAction("Index", new { id = UpdateScoreViewModel.SubjectScore.GradeID });
+           return Json(new { ReturnData = "Success" }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public ActionResult DeleteScore(int ScoreID)
+        {
+            scoreRepository.DeleteScore(ScoreID);
+            return Json(new { Success = true }, JsonRequestBehavior.AllowGet);
         }
     }
 }

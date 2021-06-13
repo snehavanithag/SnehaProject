@@ -25,7 +25,7 @@
         <tbody>
             @foreach (var item in Model.ScoreList)
             {
-                <tr>
+                <tr id="@item.ScoreID">
                     <td class="SubjectName">@item.SubjectName</td>
                     <td class="Score">@item.Score</td>
                     <td class="TestDate">@item.TestDate.ToShortDateString()</td>
@@ -82,7 +82,8 @@
 </div>
 <div id="UpsertView">
 </div>
-
+@Shared.ShowModal("Do You Want To Delete This Score?")
+<input type="hidden" id="hdnScoreID" />
 <script type="text/javascript">
 
     var editor;
@@ -110,7 +111,7 @@
                 api.column(groupColumn, { page: 'current' }).data().each(function (group, i) {
                     if (last !== group) {
                         $(rows).eq(i).before(
-                            '<tr class="group"><td colspan="4">' + group + '</td></tr>'
+                            '<tr class="group"><td colspan="5">' + group + '</td></tr>'
                         );
 
                         last = group;
@@ -124,9 +125,10 @@
         $("<a  class='btn btn-info' data-toggle='modal' data-target='#createModal'>Create New</a><span>&nbsp;&nbsp;&nbsp;</span>").prependTo(".dataTables_filter");
 
         var StartDate =  "@StartMonth" + "/01/" + + "@StartYear" ;
-        var EndDate = "@EndMonth" + "/01/" +   "@EndYear";
+        var EndDate = "@EndMonth" + "/01/" + "@EndYear";
+        var GradeID = "@GradeID";
 
-       
+
         $("#AddScore_TestDate").datepicker({
             changeMonth: true,
             changeYear: true,
@@ -135,7 +137,7 @@
 
         });
 
-      
+
         $(".editor-edit").on("click", function () {
 
             var UpdateScoreViewModel = {};
@@ -145,15 +147,42 @@
             SubjectScore.Score = $(this).parent().parent("tr").children("td.Score").text();
             SubjectScore.TestDate = $(this).parent().parent("tr").children("td.TestDate").text();
             SubjectScore.ScoreID = $(this).attr("ScoreID");
-            SubjectScore.GradeID = "@GradeID";
+            SubjectScore.GradeID = GradeID;
 
             UpdateScoreViewModel.SubjectScore = SubjectScore;
             UpdateScoreViewModel.GradeStartDate = StartDate;
             UpdateScoreViewModel.GradeEndDate = EndDate;
 
             $("#UpsertView").load("/Score/UpdateScore", { UpdateScoreViewModel: UpdateScoreViewModel });
-        })
+        });
 
+
+        $(".editor-delete").on("click", function () {
+            var ScoreID = $(this).attr("ScoreID");
+            $("#hdnScoreID").val(ScoreID);
+            $("#deleteModal").modal('show');
+        });
+
+        $("#btnDelete").on("click", function () {
+            var ScoreID = $("#hdnScoreID").val();
+
+            $.ajax({
+                url: "/Score/DeleteScore",
+                type: "POST",
+                dataType: "JSON",
+                contentType: "application/json; charset=utf-8",
+                data: '{"ScoreID":' + ScoreID + '}',
+                success: function (data) {
+                    if (data.Success) {
+                        $("#deleteModal").modal('hide');
+                        $("table tbody tr#" + ScoreID).remove();
+                    }
+                }
+
+
+            });
+
+        });
     });
 </script>
 

@@ -1,9 +1,9 @@
 ﻿@model SnehaProject.ViewModel.UpdateScoreViewModel
 
 
-<div class="modal fade UpdateModal" id="createModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+<div class="modal UpdateModal" id="createModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
     <div class="modal-dialog" role="document">
-        <form class="form-horizontal" action="/Score/Update" method="post">
+        <form class="form-horizontal" >
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -19,7 +19,7 @@
                     <div class="form-group">
                         <label for="Score" class="col-sm-2 control-label">Score</label>
                         <div class="col-sm-10">
-                            @Html.TextBoxFor(x => x.SubjectScore.Score, new { @class = "form-control", placeholder = "Enter Score" })
+                            @Html.TextBoxFor(x => x.SubjectScore.Score, new { @class = "form-control", placeholder = "Enter Score" , id="SubjectScore"})
                         </div>
                     </div>
                     <div class="form-group">
@@ -34,7 +34,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-info" data-dismiss="modal">Close</button>
-                    <input type="submit" class="btn btn-info" value="Submit" />
+                    <input type="button" class="btn btn-info" value="Submit"  id="btnScoreSubmit"/>
                 </div>
             </div>
         </form>
@@ -47,6 +47,12 @@
 
         var StartDate = "@Model.GradeStartDate";
         var EndDate = "@Model.GradeEndDate";
+        var GradeID = "@Model.SubjectScore.GradeID";
+        var GradeStartYear = new Date(StartDate).getFullYear();
+        var GradeEndYear = new Date(EndDate).getFullYear();
+
+
+        var GradeYear = GradeStartYear + "-" + GradeEndYear;
 
         $(".UpdateModal").modal('show');
 
@@ -56,5 +62,40 @@
             minDate: new Date(StartDate),
             maxDate: new Date(EndDate)
         });
-    })
+        $("#btnScoreSubmit").on("click", function () {
+            var ScoreID = $("#SubjectScore_ScoreID").val();
+            var UpdateScoreViewModel = {};
+            var SubjectScore = {};
+            SubjectScore.GradeID = GradeID;
+            SubjectScore.Score = $("#SubjectScore").val();
+            SubjectScore.ScoreID = ScoreID;
+            SubjectScore.TestDate = $("#ScoreTestDate").val();
+            UpdateScoreViewModel.SubjectScore = SubjectScore;
+            $.ajax({
+                type: "post",
+                dataType: "JSON",
+                contentType: "application/json; charset=utf-8",
+                url: "/Score/Update",
+                data: JSON.stringify(UpdateScoreViewModel),
+                success: function (data) {
+                    if (data.ReturnData == "Success") {
+                        $(".UpdateModal").modal('hide');
+                       // $("#dtPartial").hide().load("/Score/GetScores", { GradeID: GradeID, GradeYear: GradeYear });
+                         var rowUpdate = "#dtPartial table tbody tr#" + ScoreID;
+                         var rowUpdateScore = rowUpdate + " td.Score";
+                         var rowUpdateTestDate = rowUpdate + " td.TestDate";
+                        $(rowUpdateScore).text($("#SubjectScore").val());
+                        $(rowUpdateTestDate).text($("#ScoreTestDate").val());
+                    }
+                }
+            });
+            
+        });
+
+    });
+
+
+     
+
+
 </script>
