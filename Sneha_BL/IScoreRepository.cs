@@ -9,7 +9,7 @@ namespace Sneha_BL
     public interface IScoreRepository
     {
         List<SubjectScore> GetScoresByGradeID();
-        void AddScore(SubjectScore Score);
+        SubjectScore AddScore(SubjectScore Score);
         void UpdateScore(SubjectScore Score);
         void DeleteScore(int ScoreID);
     }

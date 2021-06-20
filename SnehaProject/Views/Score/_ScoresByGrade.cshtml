@@ -44,7 +44,7 @@
 
 <div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
     <div class="modal-dialog" role="document">
-        <form class="form-horizontal" action="/Score/Create" method="post">
+        <form class="form-horizontal">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -52,21 +52,24 @@
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        <label for="SubjectID" class="col-sm-2 control-label">Subject</label>
-                        <div class="col-sm-10">
+                        <label for="SubjectID" class="col-md-2 control-label">Subject</label>
+                        <div class="col-md-10">
                             @Html.DropDownListFor(x => x.AddScore.SubjectID, new SelectList(Model.SubjectList, "SubjectID", "SubjectName"), "Select Subject", new { @class = "form-control" })
+                            @Html.ValidationMessageFor(x => x.AddScore.SubjectID, "", new { @class = "text-danger", id="SubjectError" })
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="Score" class="col-sm-2 control-label">Score</label>
-                        <div class="col-sm-10">
+                        <label for="Score" class="col-md-2 control-label">Score</label>
+                        <div class="col-md-10">
                             @Html.TextBoxFor(x => x.AddScore.Score, new { @class = "form-control", placeholder = "Enter Score" })
+                            @Html.ValidationMessageFor(x => x.AddScore.Score, "", new { @class = "text-danger", id="ScoreError" })
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="TestDate" class="col-sm-2 control-label">Test Date</label>
-                        <div class="col-sm-10">
+                        <label for="TestDate" class="col-md-2 control-label">Test Date</label>
+                        <div class="col-md-10">
                             @Html.TextBoxFor(x => x.AddScore.TestDate, "{0:MM/dd/yyyy}", new { @class = "form-control", placeholder = "Select Date" })
+                            @Html.ValidationMessageFor(x => x.AddScore.TestDate, "", new { @class = "text-danger",id="TestDateError" })
                             @Html.HiddenFor(x => x.AddScore.GradeID)
                         </div>
                     </div>
@@ -74,7 +77,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-info" data-dismiss="modal">Close</button>
-                    <input type="submit" class="btn btn-info" value="Submit" />
+                    <input type="button" class="btn btn-info" value="Submit" id="btnScoreSubmit" />
                 </div>
             </div>
         </form>
@@ -86,12 +89,15 @@
 <input type="hidden" id="hdnScoreID" />
 <script type="text/javascript">
 
-    var editor;
+    var table;
+
+
     $("document").ready(function () {
        // $("#score").DataTable();
-        var groupColumn = 3;
+        
 
-         var table = $('#score').DataTable({
+           var groupColumn = 3
+           table = $('#score').DataTable({
             "columnDefs": [
                 {
                     "visible": false, "targets": groupColumn,
@@ -123,6 +129,7 @@
 
 
         $("<a  class='btn btn-info' data-toggle='modal' data-target='#createModal'>Create New</a><span>&nbsp;&nbsp;&nbsp;</span>").prependTo(".dataTables_filter");
+        //$("<a  class='btn btn-info' id='btnScoreCreate'>Create New</a><span>&nbsp;&nbsp;&nbsp;</span>").prependTo(".dataTables_filter");
 
         var StartDate =  "@StartMonth" + "/01/" + + "@StartYear" ;
         var EndDate = "@EndMonth" + "/01/" + "@EndYear";
@@ -156,7 +163,7 @@
             $("#UpsertView").load("/Score/UpdateScore", { UpdateScoreViewModel: UpdateScoreViewModel });
         });
 
-
+       
         $(".editor-delete").on("click", function () {
             var ScoreID = $(this).attr("ScoreID");
             $("#hdnScoreID").val(ScoreID);
@@ -183,6 +190,54 @@
             });
 
         });
+        $("#btnScoreSubmit").on("click", function () {
+            var SubjectName = $("#AddScore_SubjectID option:selected").text();
+            var SubjectScore = {};
+            alert(SubjectName);
+            SubjectScore.SubjectID = $("#AddScore_SubjectID").val();
+            SubjectScore.ScoreID = $("#AddScore_ScoreID").val();
+            SubjectScore.Score = $("#AddScore_Score").val();
+            SubjectScore.TestDate = $("#AddScore_TestDate").val();
+            SubjectScore.GradeID = GradeID;
+
+            $.ajax({
+                url: "/Score/Create",
+                type: "POST",
+                dataType: "JSON",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(SubjectScore),
+                success: function (data) {
+                  if (!data.errors) {
+                        $("#createModal").modal('hide');
+                        var tr = '<tr id=' + data.Score.ScoreID + '>';
+                        tr = tr + '<td class="SubjectName">' + SubjectName + '</td>';
+                        tr = tr + '<td class="Score">' + SubjectScore.Score + '</td>';
+                        tr = tr + '<td class="TestDate">' + SubjectScore.TestDate + '</td>';
+                        tr = tr + '<td class="TermName">' + data.Score.TermName + '</td>';
+                        tr = tr + '<td><a class="editor-edit" style="cursor:pointer" ScoreID=' + data.ScoreID + '><i class="fa fa-pencil" /></a></td>';
+                        tr = tr + '<td><a class="editor-delete" style="cursor:pointer" ScoreID=' + data.ScoreID + '><i class="fa fa-trash" /></a></td>';
+
+                        const row = $(tr);
+
+                        table.row.add(row[0]).draw();
+    
+                    }
+                    else {
+                        displayValidationErrors(data.errorList);
+                    }
+                }
+
+
+            });
+        });
+        function displayValidationErrors(errors) {
+            $.each(errors, function (idx, validationError) {
+                //alert(validationError.PropertyName);
+                //alert(validationError.ErrorList[0]);
+                $("span[data-valmsg-for='" + "AddScore." + validationError.PropertyName + "']").text(validationError.ErrorList[0]);
+
+            });
+        }
     });
 </script>
 

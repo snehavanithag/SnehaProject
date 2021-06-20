@@ -49,3 +49,12 @@ textarea {
 #score tr.group:hover {
     background-color: #ddd !important;
 }
+.list-group-item {
+    position: relative;
+    display: block;
+    padding: 10px 15px;
+    margin-bottom: -1px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    background-color: #d9edf7 !important;
+}

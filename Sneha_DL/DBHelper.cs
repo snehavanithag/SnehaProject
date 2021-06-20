@@ -63,5 +63,57 @@ namespace Sneha_DL
             }
            
         }
+
+        public Dictionary<string, dynamic> AddData(string storedprocedure, Dictionary<string,dynamic> parameters)
+        {
+            Dictionary<string, dynamic> OutPutList = new Dictionary<string, dynamic>();
+            using (SqlConnection connection = new SqlConnection(ConnectionString))
+            {
+                SqlCommand command = new SqlCommand();
+                command.Connection = connection;
+                command.CommandType = CommandType.StoredProcedure;
+                command.CommandText = storedprocedure;
+                
+
+                if (parameters != null)
+                {
+                    foreach (KeyValuePair<string, dynamic> item in parameters)
+                    {
+                        if(Convert.ToString(item.Value) != "Output")
+                             command.Parameters.AddWithValue(item.Key, item.Value);
+
+                        else
+                        {
+                            SqlParameter outputParam = new SqlParameter();
+                            outputParam.ParameterName = item.Key;
+                            var value = item.Value;
+
+                            if(value is int)
+                                 outputParam.SqlDbType = SqlDbType.Int;
+
+                            if (value is string)
+                            {
+                                outputParam.SqlDbType = SqlDbType.VarChar;
+                                outputParam.Size = 20;
+                            }
+
+                            outputParam.Direction = ParameterDirection.Output;
+                            command.Parameters.Add(outputParam);
+                        }
+                    }
+                }
+
+                connection.Open();
+                command.ExecuteNonQuery();
+
+                var OutPutKeys = parameters.Where(x => Convert.ToString(x.Value) == "Output").ToList();
+
+                foreach(var item in OutPutKeys)
+                {
+                    OutPutList.Add(item.Key,command.Parameters[item.Key].Value);
+                }
+                return OutPutList;
+            }
+        }
     }
 }

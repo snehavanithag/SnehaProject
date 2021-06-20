@@ -28,4 +28,5 @@ namespace SnehaProject.ViewModel
     {
         public string[] categories { get; set; }
     }
+
 }

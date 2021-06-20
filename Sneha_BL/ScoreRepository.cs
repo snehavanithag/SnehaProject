@@ -16,14 +16,30 @@ namespace Sneha_BL
             dbHelper = new DBHelper();
         }
 
-        public void AddScore(SubjectScore Score)
+        public SubjectScore AddScore(SubjectScore Score)
         {
+            SubjectScore SubjectScore = new SubjectScore();
             Dictionary<string, dynamic> ScoreParam = new Dictionary<string, dynamic>();
             ScoreParam.Add("@SubjectID", Score.SubjectID);
             ScoreParam.Add("@GradeID", Score.GradeID);
             ScoreParam.Add("@Score", Score.Score);
             ScoreParam.Add("@TestDate", Score.TestDate);
-            dbHelper.UpdateData("Prc_AddScore", ScoreParam);
+            ScoreParam.Add("@ScoreID", "Output");
+            ScoreParam.Add("@TermName", "Output");
+            Dictionary<string, dynamic> output =  dbHelper.AddData("Prc_AddScore", ScoreParam);
+            foreach(KeyValuePair<string, dynamic> keyValuePair in output)
+            {
+                switch(keyValuePair.Key)
+                {
+                    case "@ScoreID":
+                        SubjectScore.ScoreID = Convert.ToInt32(keyValuePair.Value);
+                        break;
+                    case "@TermName":
+                        SubjectScore.TermName = Convert.ToString(keyValuePair.Value);
+                        break;
+                }
+            }
+            return SubjectScore;
         }
 
         public List<SubjectScore> GetScoresByGradeID()

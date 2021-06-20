@@ -9,7 +9,7 @@
         //var dvFirst = ((first == subject.SelectedGrade) && (subject.Subjects.Any(x=>x.SubjectID.HasValue))) ? "in" : string.Empty;
         var dvFirst = subject.GradeID == subject.SelectedGrade ? "in" : string.Empty;
         var panelid = "panel" + first.ToString();
-        <div class="panel panel-default">
+        <div class="panel panel-info">
             <div class="panel-heading">
                 <a role="button" data-toggle="collapse" data-parent="#accordion" href="#@panelid" aria-expanded="true" aria-controls="collapseOne">
                     @subject.GradeNameKey
