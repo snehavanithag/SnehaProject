@@ -19,13 +19,15 @@
                     <div class="form-group">
                         <label for="Score" class="col-sm-2 control-label">Score</label>
                         <div class="col-sm-10">
-                            @Html.TextBoxFor(x => x.SubjectScore.Score, new { @class = "form-control", placeholder = "Enter Score" , id="SubjectScore"})
+                            @Html.TextBoxFor(x => x.SubjectScore.Score, new { @class = "form-control", placeholder = "Enter Score", id = "SubjectScore" })
+                            @Html.ValidationMessageFor(x => x.SubjectScore.Score, "", new { @class = "text-danger", id = "EditErrorScore" })
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="TestDate" class="col-sm-2 control-label">Test Date</label>
                         <div class="col-sm-10">
                             @Html.TextBoxFor(x => x.SubjectScore.TestDate, "{0:MM/dd/yyyy}", new { @class = "form-control", placeholder = "Select Date", id = "ScoreTestDate" })
+                            @Html.ValidationMessageFor(x => x.SubjectScore.TestDate, "", new { @class = "text-danger", id = "EditErrorTestDate" })
                             @Html.HiddenFor(x => x.SubjectScore.ScoreID)
                             @Html.HiddenFor(x => x.SubjectScore.GradeID)
                         </div>
@@ -34,7 +36,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-info" data-dismiss="modal">Close</button>
-                    <input type="button" class="btn btn-info" value="Submit"  id="btnScoreSubmit"/>
+                    <input type="button" class="btn btn-info" value="Submit"  id="btnUpdateScoreSubmit"/>
                 </div>
             </div>
         </form>
@@ -62,7 +64,7 @@
             minDate: new Date(StartDate),
             maxDate: new Date(EndDate)
         });
-        $("#btnScoreSubmit").on("click", function () {
+        $("#btnUpdateScoreSubmit").on("click", function () {
             var ScoreID = $("#SubjectScore_ScoreID").val();
             var UpdateScoreViewModel = {};
             var SubjectScore = {};
@@ -78,24 +80,45 @@
                 url: "/Score/Update",
                 data: JSON.stringify(UpdateScoreViewModel),
                 success: function (data) {
-                    if (data.ReturnData == "Success") {
+                    if (!data.errors) {
                         $(".UpdateModal").modal('hide');
-                       // $("#dtPartial").hide().load("/Score/GetScores", { GradeID: GradeID, GradeYear: GradeYear });
-                         var rowUpdate = "#dtPartial table tbody tr#" + ScoreID;
-                         var rowUpdateScore = rowUpdate + " td.Score";
-                         var rowUpdateTestDate = rowUpdate + " td.TestDate";
-                        $(rowUpdateScore).text($("#SubjectScore").val());
-                        $(rowUpdateTestDate).text($("#ScoreTestDate").val());
+                        table.clear();
+                        $.each(data.ListData, function (idx, val) {
+                            
+                            var tr = '<tr id=' + val.ScoreID + '>';
+                            tr = tr + '<td class="SubjectName">' + val.SubjectName + '</td>';
+                            tr = tr + '<td class="Score">' + val.Score + '</td>';
+                            tr = tr + '<td class="TestDate">' + new Date(val.TestDate) + '</td>';
+                            tr = tr + '<td class="TermName">' + val.TermName + '</td>';
+                            tr = tr + '<td><a class="editor-edit" style="cursor:pointer" ScoreID=' + val.ScoreID + '><i class="fa fa-pencil" /></a></td>';
+                            tr = tr + '<td><a class="editor-delete" style="cursor:pointer" ScoreID=' + val.ScoreID + '><i class="fa fa-trash" /></a></td>';
+
+                            const row = $(tr);
+
+                            table.row.add(row[0]).draw();
+                        });
+                       
+                    }
+                    else {
+                        displayEditValidationErrors(data.errorList);
                     }
                 }
             });
-            
+
         });
+        function displayEditValidationErrors(errors) {
+            $.each(errors, function (idx, validationError) {
+                //alert(validationError.PropertyName);
+                //alert(validationError.ErrorList[0]);
+                $("span[data-valmsg-for='" + validationError.PropertyName + "']").text(validationError.ErrorList[0]);
+
+            });
+        }
 
     });
 
 
-     
+
 
 
 </script>

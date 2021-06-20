@@ -30,7 +30,7 @@ namespace SnehaProject.Controllers
             {
                 "Line Chart By Subject" ,
                 "Bar Chart By Term",
-                "Pie Chart"
+                "Overall Percentage By Term(Bar Chart)"
             };
 
             return View();
@@ -130,18 +130,30 @@ namespace SnehaProject.Controllers
 
             chartViewModel.yAxis = new List<ChartData>();
 
-            //foreach(var item in ChartResult)
-            //{
-            //    ChartData chartData = new ChartData();
-            //    chartData.name = item.TermDate;
-
-
-            //}
-
             chartViewModel.yAxis = ChartResult.OrderBy(x=>x.SubjectName).GroupBy(x => x.TermDate).Select(g => new ChartData { name = g.Key, data = g.Select(x => x.Score).ToArray() }).ToList();
 
             return Json(chartViewModel, JsonRequestBehavior.AllowGet);
         }
-           
+
+        public ActionResult GetOverallTermChart(int id)
+        {
+            ChartViewModel chartViewModel = new ChartViewModel();
+            var ChartResult = chartRepositary.GetOverallTermChartData(id);
+            chartViewModel.xAxis = new XAxisData();
+            var TermList = chartRepositary.GetChartList();
+          
+            chartViewModel.xAxis.categories = TermList.ToArray();
+
+            ChartData ChartData = new ChartData();
+            ChartData.name = gradeRepositary.GetGrades().Where(x => x.GradeID == id).FirstOrDefault().GradeName;
+            ChartData.data = ChartResult.ToArray();
+
+            List<ChartData> listData = new List<ChartData>();
+            listData.Add(ChartData);
+            chartViewModel.yAxis = listData;
+
+            return Json(chartViewModel, JsonRequestBehavior.AllowGet);
+        }
+
     }
 }

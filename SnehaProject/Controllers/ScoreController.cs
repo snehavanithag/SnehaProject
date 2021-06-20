@@ -54,10 +54,36 @@ namespace SnehaProject.Controllers
         }
 
         [HttpPost]
-        public ActionResult Create(ScoreViewModel Score)
+        //public ActionResult Create(ScoreViewModel Score)
+        public ActionResult Create(SubjectScore SubjectScore)
         {
-            scoreRepository.AddScore(Score.AddScore);
-            return RedirectToAction("Index",new { id = Score.AddScore.GradeID });
+            if (ModelState.IsValid)
+            {
+                SubjectScore Score = scoreRepository.AddScore(SubjectScore);
+                // return RedirectToAction("Index", new { id = Score.AddScore.GradeID });
+                return Json(new { errors = false , Score = Score }, JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                return Json(new
+                {
+                    errors = true,
+                    errorList = GetModelStateErrors(ModelState)
+                }, JsonRequestBehavior.AllowGet);
+            }
+        }
+        public IEnumerable<ValidationError> GetModelStateErrors(ModelStateDictionary modelState)
+        {
+             var errors = (from m in modelState
+                          where m.Value.Errors.Count() > 0
+                          select
+                             new ValidationError
+                             {
+                                 PropertyName = m.Key,
+                                 ErrorList = (from msg in m.Value.Errors
+                                              select msg.ErrorMessage).ToArray()
+                             }).AsEnumerable();
+            return errors;
         }
 
         public ActionResult UpdateScore(UpdateScoreViewModel UpdateScoreViewModel)
@@ -68,9 +94,21 @@ namespace SnehaProject.Controllers
         [HttpPost]
         public ActionResult Update(UpdateScoreViewModel UpdateScoreViewModel)
         {
-            scoreRepository.UpdateScore(UpdateScoreViewModel.SubjectScore);
-          //  return RedirectToAction("Index", new { id = UpdateScoreViewModel.SubjectScore.GradeID });
-           return Json(new { ReturnData = "Success" }, JsonRequestBehavior.AllowGet);
+            if (ModelState.IsValid)
+            {
+                scoreRepository.UpdateScore(UpdateScoreViewModel.SubjectScore);
+                List<SubjectScore> ScoreData = scoreRepository.GetScoresByGradeID().Where(x => x.GradeID == UpdateScoreViewModel.SubjectScore.GradeID).ToList();
+                //  return RedirectToAction("Index", new { id = UpdateScoreViewModel.SubjectScore.GradeID });
+                return Json(new { errors = false, ListData = ScoreData }, JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                return Json(new
+                {
+                    errors = true,
+                    errorList = GetModelStateErrors(ModelState)
+                }, JsonRequestBehavior.AllowGet);
+            }
         }
 
         [HttpPost]

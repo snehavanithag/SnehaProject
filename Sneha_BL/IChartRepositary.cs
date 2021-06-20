@@ -9,5 +9,7 @@ namespace Sneha_BL
     public interface IChartRepositary
     {
         List<Chart> GetChartData(int GradeID, string ChartType);
+        List<string> GetChartList();
+        List<decimal> GetOverallTermChartData(int GradeID);
     }
 }

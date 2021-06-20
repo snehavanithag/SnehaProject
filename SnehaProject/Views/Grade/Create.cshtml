@@ -4,6 +4,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <br />
+<h3>Add Grade In @Model.SchoolName</h3>
 <br />
 <form method="post" action="/Grade/Create">
     @Html.Partial("_Grade", Model)

@@ -11,5 +11,6 @@ namespace SnehaProject.ViewModel
         public SubjectScore AddScore { get; set; }
         public List<SubjectScore> ScoreList { get; set; }
         public List<Subject> SubjectList { get; set; }
+        public bool ValidationSuccess { get; set; }
     }
 }

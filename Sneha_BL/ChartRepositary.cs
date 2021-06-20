@@ -32,6 +32,8 @@ namespace Sneha_BL
                 case "BarChart":
                     SPName = "Prc_GetBarChart";
                     break;
+                case "OverallTermPercentageBarChart":
+                    break;
             }
             ds= dbHelper.GetData(SPName, param);
             foreach (DataRow dr in ds.Tables[0].Rows)
@@ -43,6 +45,30 @@ namespace Sneha_BL
                 charts.Add(chart);
             }
             return charts;
+        }
+
+        public List<decimal> GetOverallTermChartData(int GradeID)
+        {
+            Dictionary<string, dynamic> param = new Dictionary<string, dynamic>();
+            param.Add("@GradeID", GradeID);
+            DataSet ds = dbHelper.GetData("Prc_GetOverAllTermChart", param);
+            List<decimal> TermsScore = new List<decimal>();
+            foreach (DataRow dr in ds.Tables[0].Rows)
+            {
+                TermsScore.Add(Convert.ToDecimal(dr["TermScore"]));
+            }
+            return TermsScore;
+        }
+
+        public List<string> GetChartList()
+        {
+            DataSet ds = dbHelper.GetData("Prc_GetTermList");
+            List<string> TermList = new List<string>();
+            foreach(DataRow dr in ds.Tables[0].Rows)
+            {
+                TermList.Add(dr["TermName"].ToString());
+            }
+            return TermList;
         }
     }
 }
