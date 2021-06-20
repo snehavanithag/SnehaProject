@@ -15,7 +15,8 @@
         <div class="row">
             <div class="col-md-4"></div>
             <div class="col-md-4">
-                @Html.DropDownList("Grades", new SelectList(ViewBag.GradeList, "GradeValue", "GradeText"), "Select Grade", new { @class = "form-control", id = "Grades" })
+                @*@Html.DropDownList("Grades", new SelectList(ViewBag.GradeList, "GradeValue", "GradeText"), "Select Grade", new { @class = "form-control", id = "Grades" })*@
+                @Html.DropDownList("Grades", new SelectList(ViewBag.GradeList, "GradeValue", "GradeText") , new { @class = "form-control", id = "Grades" })
             </div>
             <div class="col-md-4"></div>
         </div>
@@ -23,7 +24,28 @@
        <div class="row">
             <div class="col-md-4"></div>
             <div class="col-md-4">
-                @Html.DropDownList("ChartType", new SelectList(ViewBag.ChartList), "Select Chart", new { @class = "form-control", id = "ChartType" })
+                @*@Html.DropDownList("ChartType", new SelectList(ViewBag.ChartList), "Select Chart", new { @class = "form-control", id = "ChartType" })*@
+                <div class="list-group">
+                    <div class="radio list-group-item">
+                        <label>
+                            <input type="radio" name="ChartType" id="optionsRadios1" value="Line Chart By Subject">
+                            Line Chart By Subject
+                        </label>
+                    </div>
+                    <div class="radio list-group-item">
+                        <label>
+                            <input type="radio" name="ChartType" id="optionsRadios2" value="Bar Chart By Term">
+                            Bar Chart By Term
+                        </label>
+                    </div>
+                    <div class="radio list-group-item">
+                        <label>
+                            <input type="radio" name="ChartType" id="optionsRadios3" value="Overall Percentage By Term(Bar Chart)" checked>
+                            Overall Percentage By Term(Bar Chart)
+                        </label>
+                    </div>
+                </div>
+              
             </div>
             <div class="col-md-4"></div>
         </div>
@@ -41,21 +63,24 @@
 
 <script type="text/javascript">
     $(function () {
-        var GradeValue="";
-        var GradeID = "";
-        var GradeYear = "";
+        var GradeValue = $("#Grades").val();
+        var GradeID = GradeValue.split(',')[0];
+        var GradeYear = GradeValue.split(',')[1];
+        var ChartType = $("input[type ='radio']:checked").val();
+        GetChartType(ChartType);
         $("#Grades").on("change", function () {
             GradeValue = $(this).val();
             if (GradeValue != "") {
                 GradeID = GradeValue.split(',')[0];
-                GradeYear = GradeValue.split(',')[1];   
+                GradeYear = GradeValue.split(',')[1];
+                $("#ChartType").val("");
             }
         });
 
-        $("#ChartType").on("change", function () {
+        $("input[name='ChartType']").on("change", function () {
             var ChartType = $(this).val();
             if (ChartType != "") {
-
+                $("#container").show();
                 switch (ChartType) {
                     case "Line Chart By Subject":
                         {
@@ -67,10 +92,60 @@
                             GetBarChart(GradeID);
                             break;
                         }
+                    case "Overall Percentage By Term(Bar Chart)":
+                        {
+                            GetOverallTermChart(GradeID);
+                            break;
+                        }
                 }
-               
+
             }
         });
+
+        function GetChartType(ChartType) {
+            switch (ChartType) {
+                case "Line Chart By Subject":
+                    {
+                        GetChartData(GradeID, GradeYear);
+                        break;
+                    }
+                case "Bar Chart By Term":
+                    {
+                        GetBarChart(GradeID);
+                        break;
+                    }
+                case "Overall Percentage By Term(Bar Chart)":
+                    {
+                        GetOverallTermChart(GradeID);
+                        break;
+                    }
+            }
+        }
+
+        //$("#ChartType").on("change", function () {
+        //    var ChartType = $(this).val();
+        //    if (ChartType != "") {
+        //        $("#container").show();
+        //        switch (ChartType) {
+        //            case "Line Chart By Subject":
+        //                {
+        //                    GetChartData(GradeID, GradeYear);
+        //                    break;
+        //                }
+        //            case "Bar Chart By Term":
+        //                {
+        //                    GetBarChart(GradeID);
+        //                    break;
+        //                }
+        //            case "Overall Percentage By Term(Bar Chart)":
+        //                {
+        //                    GetOverallTermChart(GradeID);
+        //                    break;
+        //                }
+        //        }
+               
+        //    }
+        //});
 
 
         function GetChartData(GradeID, GradeYear) {
@@ -89,8 +164,8 @@
 
                     xAxisData = data.xAxis;
                     yAxisData = data.yAxis;
-                    alert(xAxisData);
-                    alert(yAxisData);
+                    //alert(xAxisData);
+                    //alert(yAxisData);
                     var title = {
                         text: 'Monthly Score Chart'
                     };
@@ -146,7 +221,7 @@
         function GetBarChart(GradeID) {
             var xAxisData;
             var yAxisData;
-            alert(GradeID);
+          //  alert(GradeID);
             $.ajax({
                 type: "POST",
                 dataType: "JSON",
@@ -157,8 +232,8 @@
                 success: function (data) {
                     xAxisData = data.xAxis;
                     yAxisData = data.yAxis;
-                    alert(xAxisData);
-                    alert(yAxisData);
+                   // alert(xAxisData);
+                    //alert(yAxisData);
                     var chart = {
                         type: 'bar'
                     };
@@ -213,8 +288,8 @@
                         layout: 'vertical',
                         align: 'right',
                         verticalAlign: 'middle',
-                                    itemMarginTop: 10,
-                                        itemMarginBottom: 10
+                        itemMarginTop: 10,
+                        itemMarginBottom: 10
                     };
                     var credits = {
                         enabled: false
@@ -244,6 +319,110 @@
 
 
            
+
+        }
+
+        function GetOverallTermChart(GradeID) {
+            var xAxisData;
+            var yAxisData;
+           // alert(GradeID);
+            $.ajax({
+                type: "POST",
+                dataType: "JSON",
+                contentType: "application/json; charset=utf-8",
+                data: '{"id":' + parseInt(GradeID) + '}',
+                // var paramdata = '{"id":' + ID + ',"year":' + '"' + GradeYear + '" }';
+                url: "/Chart/GetOverallTermChart",
+                success: function (data) {
+                    xAxisData = data.xAxis;
+                    yAxisData = data.yAxis;
+                    //alert(xAxisData);
+                    //alert(yAxisData);
+                    var chart = {
+                        type: 'bar'
+                    };
+                    var title = {
+                        text: 'Overall Score By Term'
+                    };
+                    var subtitle = {
+                        text: 'First Grade'
+                    };
+                    //var xAxis = {
+                    //    categories: ['Africa', 'America', 'Asia', 'Europe', 'Oceania'],
+                    //    title: {
+                    //        text: null
+                    //    }
+                    //};
+                    var xAxis = xAxisData;
+                    var yAxis = {
+                        min: 0,
+                        title: {
+                            text: 'Score',
+                            align: 'high'
+                        },
+                        labels: {
+                            overflow: 'justify'
+                        }
+                    };
+                    var tooltip = {
+                        valueSuffix: ' millions'
+                    };
+                    var plotOptions = {
+                        bar: {
+                            dataLabels: {
+                                enabled: true
+                            }
+                        }
+                    };
+                    //var legend = {
+                    //    layout: 'vertical',
+                    //    align: 'right',
+                    //    verticalAlign: 'top',
+                    //    x: -40,
+                    //    y: 100,
+                    //    floating: true,
+                    //    borderWidth: 1,
+
+                    //    backgroundColor: (
+                    //        (Highcharts.theme && Highcharts.theme.legendBackgroundColor) ||
+                    //        '#FFFFFF'),
+                    //    shadow: true
+                    //};
+                    var legend = {
+                        layout: 'vertical',
+                        align: 'right',
+                        verticalAlign: 'middle',
+                        itemMarginTop: 10,
+                        itemMarginBottom: 10
+                    };
+                    var credits = {
+                        enabled: false
+                    };
+
+                    var series = yAxisData;
+
+                    var json = {};
+                    json.chart = chart;
+                    json.title = title;
+                    json.subtitle = subtitle;
+                    json.tooltip = tooltip;
+                    json.xAxis = xAxis;
+                    json.yAxis = yAxis;
+                    json.series = series;
+                    json.plotOptions = plotOptions;
+                    json.legend = legend;
+                    json.credits = credits;
+                    $('#container').highcharts(json);
+                },
+                error: function (jqXHR) {
+                    $("#dvError").text(jqXHR.responseText);
+                    $("#dvError").show('fade');
+                }
+
+            });
+
+
+
 
         }
     });

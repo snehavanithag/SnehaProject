@@ -1,4 +1,7 @@
 ﻿@model Sneha_BL.Grade
+@{ 
+    var DurationLabel = "Duration(" + Model.SchoolDuration + ")";
+}
 
 <div class="form-group">
     <label for="GradeName" class="form-label">Grade Name</label>
@@ -6,7 +9,7 @@
     @Html.ValidationMessageFor(x => x.GradeName, "", new { @class = "text-danger" })
 </div>
 <div class="form-group">
-    <label for="GradeYear" class="form-label">Duration</label>
+    <label for="GradeYear" class="form-label">@DurationLabel</label>
     @Html.TextBoxFor(x => x.GradeYear, new { @class = "form-control", placeholder = "Duration" })
     @Html.ValidationMessageFor(x => x.GradeYear, "", new { @class = "text-danger" })
 </div>
@@ -20,7 +23,7 @@
 <input type="submit" class="btn btn-primary" value="Submit" />
 <button type="button" class="btn btn-primary" id="btnCancel">Cancel</button>
 
-<a href="/Grade/Index" class="btn btn-primary">Back</a>
+<a href="/Grade/Index/@Model.SchoolID" class="btn btn-primary">Back</a>
 <script type="text/javascript">
     $(function () {
         $("#btnCancel").on("click", function () {

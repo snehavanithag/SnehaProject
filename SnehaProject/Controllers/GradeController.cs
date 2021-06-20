@@ -24,10 +24,14 @@ namespace SnehaProject.Controllers
         }
         public ActionResult Create(int id)
         {
-            Grade grade = new Grade();
-            grade.SchoolID = id;
-            ViewBag.Schools = schoolRepositary.GetSchools();
-            return View(grade);
+            Grade Grade = new Grade();
+            Grade.SchoolID = id;
+            var Schools = schoolRepositary.GetSchools(); 
+            ViewBag.Schools = Schools;
+            var School = Schools.Where(x => x.SchoolID == id).FirstOrDefault();
+            Grade.SchoolDuration = School.Duration;
+            Grade.SchoolName = School.SchoolName;
+            return View(Grade);
         }
         [HttpPost]
         public ActionResult Create(Grade grade)
